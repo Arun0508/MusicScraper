@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup as bs4
 import webbrowser
 import re
+import zipfile
+import os
 
 def download_zip_url(url):
     page = requests.get(url)
@@ -10,9 +12,13 @@ def download_zip_url(url):
     download = requests.get('http://www.starfile.fun/download-7s-zip-new/' + download_link_partial)
     d = download.headers['content-disposition']
     fname = re.findall("filename=(.+)", d)[0]
-    with open(fname[1:-1], 'wb') as file:
+    fname=fname[1:-1]
+    with open(fname, 'wb') as file:
         file.write(download.content)
-
+    zip_ref = zipfile.ZipFile(fname, 'r')
+    zip_ref.extractall('.') #location to extract to
+    zip_ref.close()
+    os.remove(fname)
 def download_song_url(url):
     page = requests.get(url)
     soup = bs4(page.text, 'html.parser')
@@ -79,7 +85,6 @@ if __name__ == '__main__':
     albums_container=soup.find("div", {"id": "search_albums"})
     links = albums_container.findAll('a', {'class': 'label label-danger'})
     choice=display_results(links)
-    print('received result: '+str(choice))
     while choice[0]!=1 and choice[0]!=2:
         choice=display_results(links)
     if choice[0]==1:
