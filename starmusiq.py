@@ -11,7 +11,11 @@ def download_zip_url(zip_url):
     soup = bs4(page.text, 'html.parser')
     download_link_partial = soup.find('a', {'class': 'btn btn-lg btn-success'})['href']
     download = requests.get('http://www.starfile.fun/download-7s-zip-new/' + download_link_partial)
-    d = download.headers['content-disposition']
+    try:
+        d = download.headers['content-disposition']
+    except KeyError:
+        if download.headers['Content-Type'] == 'text/html; charset=utf-8':
+            print('Sorry, this download has been deleted due to DMCA complaints')
     filename = re.findall("filename=(.+)", d)[0]
     filename = filename[1:-1]
     with open(filename, 'wb') as file:
@@ -22,14 +26,14 @@ def download_zip_url(zip_url):
     os.remove(filename)
 
 
-def download_song_url(url):
+def download_song_url(url, fname):
     page = requests.get(url)
     soup = bs4(page.text, 'html.parser')
     download_link_partial = soup.find('a', {'class': 'btn btn-lg btn-success'})['href']
     download = requests.get('http://www.musiqfile.fun/download-7s-sng-new/' + download_link_partial)
-    d = download.headers['content-disposition']
-    fname = re.findall("filename=(.+)", d)[0]
-    with open(fname[1:-1], 'wb') as file:
+    if download.headers['Content-Type']=='text/html; charset=utf-8':
+        print('Sorry, this song has been deleted due to DMCA complaints')
+    with open(fname+'.mp3', 'wb') as file:
         file.write(download.content)
 
 
@@ -52,8 +56,8 @@ def display_results(links):
     if choice % 3 == 0:  # download album
         return 1, 'https://starmusiq.fun' + link['href']
     elif choice % 3 == 1:  # print song list
-        song_url = print_song_list('https://starmusiq.fun' + link['href'])
-        return 2, song_url
+        song_url, song_name = print_song_list('https://starmusiq.fun' + link['href'])
+        return 2, song_url,song_name
     elif choice % 3 == 2:  # go to webpage
         webbrowser.open('http://starmusiq.fun' + link['href'])
         q = input('Download this album? y/n: ')
@@ -81,7 +85,7 @@ def print_song_list(song_url):
     # todo: add choice to download entire album also
     # todo: check for invalid input
     choice -= 1
-    return song_list[choice]['url']
+    return song_list[choice]['url'], song_list[choice]['name']
 
 
 if __name__ == '__main__':
@@ -103,4 +107,4 @@ if __name__ == '__main__':
                      'none;border-radius:.25em; font-weight:700;'})
         download_zip_url(links[1]['href'])  # links[0] is 160kbps link and links[1] is for 320kbps
     elif choice[0] == 2:
-        download_song_url(choice[1])  # for a song returned value would be the starfile link
+        download_song_url(choice[1],choice[2])  # for a song returned value would be the starfile link
