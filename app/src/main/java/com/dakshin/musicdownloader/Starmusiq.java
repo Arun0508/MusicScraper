@@ -33,11 +33,31 @@ public class Starmusiq {
         String link=div.getElementsByTag("a").first().attr("href");
         return "http://www.starfile.fun/download-7s-zip-new/"+link;
     }
-    public String songUrl(String pageUrl){
-        Document page=Jsoup.parse(pageToString(pageUrl));
-        Element div=page.getElementsByClass("inner cover").first();
-        String link=div.getElementsByTag("a").first().attr("href");
-        return "http://www.starfile.fun/download-7s-sng-new/"+link;
+    public String songUrl(final String pageUrl){
+//        Document page=Jsoup.parse(pageToString(pageUrl));
+        Document page= null;
+        final StringBuilder link=new StringBuilder();
+        Thread t=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Document page = Jsoup.parse(new URL(pageUrl),30000);
+                    Element div=page.getElementsByClass("inner cover").first();
+                    link.append(div.getElementsByTag("a").first().attr("href"));
+                } catch (IOException e) {
+                    Log.e("tag","xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                    Log.e("tag",e.getLocalizedMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "http://www.starfile.fun/download-7s-sng-new/"+link.toString();
     }
     public JSONObject searchStarmusiq(final String searchterm) {
         final JSONObject resultsJSON=new JSONObject();
@@ -181,24 +201,20 @@ public class Starmusiq {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        BufferedReader br= null;
+        BufferedReader br;
+        StringBuilder p=null;
         try {
             br = new BufferedReader(new InputStreamReader(url.openStream()));
+            String s;
+            try {
+                while((s=br.readLine())!=null)
+                    p = (p == null ? new StringBuilder() : p).append(s);
+            } catch (IOException e) {
+                Log.e("tag","ioexception in pagetostring");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String s;
-        StringBuilder p = null;
-        try {
-            while((s=br.readLine())!=null)
-                p = (p == null ? new StringBuilder() : p).append(s);
-        } catch (IOException e) {
-            Log.e("tag","ioexception in pagetostring");
-        }
-
         return p != null ? p.toString() : null;
-    }
-    private void writeToFile(String s){
-        Log.d("tag",s);
     }
 }

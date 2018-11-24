@@ -1,10 +1,18 @@
 package com.dakshin.musicdownloader;
 
+import android.app.DownloadManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -56,9 +64,10 @@ public class StarmusiqAlbum extends AppCompatActivity {
             }
         };
         listView.setAdapter(adapter);
-        Starmusiq starmusiq=new Starmusiq();
+        final Starmusiq starmusiq=new Starmusiq();
+        JSONArray albumJson=null;
         try {
-            JSONArray albumJson = starmusiq.openAlbum(link).getJSONArray("albumContents");
+            albumJson = starmusiq.openAlbum(link).getJSONArray("albumContents");
             for(int i=0;i<albumJson.length();i++)
             {
                 JSONObject item=albumJson.getJSONObject(i);
@@ -69,6 +78,58 @@ public class StarmusiqAlbum extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        final JSONArray finalAlbumJson = albumJson;
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                try {
+                    final JSONObject item= finalAlbumJson.getJSONObject(position);
+                    AlertDialog.Builder builder=new AlertDialog.Builder(StarmusiqAlbum.this);
+                    builder.setTitle("Choose download quality");
+                    builder.setPositiveButton("160 kbps", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            DownloadManager manager=(DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
+                            try {
+                                String link=item.getString("160link");
+                                link=starmusiq.songUrl(link);
+                                Log.d("tag","160link: "+link);
+                                DownloadManager.Request request=new DownloadManager.Request(Uri.parse(link));
+                                request.setTitle("download");
+                                request.setDescription("music");
+                                request.setDestinationInExternalFilesDir(StarmusiqAlbum.this,Environment.DIRECTORY_MUSIC,"download.mp3");
+                                request.allowScanningByMediaScanner();
+                                manager.enqueue(request);
+                                Log.d("tag","request enqueed.");
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                                startActivity(browserIntent);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    builder.setNegativeButton("320 kbps", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            DownloadManager manger=(DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
+                            try {
+                                DownloadManager.Request request=new DownloadManager.Request(
+                                        Uri.parse(item.getString("320link"))
+                                );
+                                request.allowScanningByMediaScanner();
+                                manger.enqueue(request);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                    builder.show();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
     public void download160(View v) {
         //todo

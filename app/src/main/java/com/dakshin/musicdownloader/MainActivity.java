@@ -1,5 +1,7 @@
 package com.dakshin.musicdownloader;
 
+import android.app.DownloadManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
