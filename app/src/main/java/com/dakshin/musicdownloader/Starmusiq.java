@@ -14,6 +14,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -90,52 +91,67 @@ public class Starmusiq {
         return resultsJSON;
     }
 
-    public JSONObject openAlbum(String albumURL) {
-        Document doc= Jsoup.parse(pageToString(albumURL));
-        Element table=doc.getElementsByClass("table table-condensed table-hover small").first();
-        JSONObject albumJSON=new JSONObject();
-        JSONArray songsArray=new JSONArray();
-        String kbps_160_AlbumLink,kbps_320_AlbumLink;
+    public JSONObject openAlbum(final String albumURL) {
+        final JSONObject albumJSON=new JSONObject();
+        final JSONArray songsArray=new JSONArray();
+        Log.d("tag", "open album url " + albumURL);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Document doc = Jsoup.parse(pageToString(albumURL));
+                Element table = doc.getElementsByClass("table table-condensed table-hover small").first();
+                String kbps_160_AlbumLink, kbps_320_AlbumLink;
+                Element albumLinksDiv = doc.getElementsByClass("col-md-8").last();
+                Elements albumLinks = albumLinksDiv.getElementsByTag("a");
+                kbps_160_AlbumLink = albumLinks.get(0).attr("href");
+                kbps_320_AlbumLink = albumLinks.get(1).attr("href");
+                try {
+                    albumJSON.put("albumContents", otherAlbumOpenMethod(table));
+                    albumJSON.put("160kbpsZip", kbps_160_AlbumLink);
+                    albumJSON.put("320kbpsZip", kbps_320_AlbumLink);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return albumJSON;
+    }
+    private JSONArray otherAlbumOpenMethod(Element table) {
+        JSONArray array=new JSONArray();
         Elements rows=table.getElementsByTag("tr");
-        for(int i=0;i<rows.size();i++)
-        {
+        for(int i=0;i<rows.size();i++) {
             Element row1=rows.get(i++);
-            Element row2=rows.get(i++);
-            Element row3=rows.get(i);
-            String songName=row1.getElementsByTag("strong").first().text();
-
-            Elements songLinks= row2.getElementsByTag("a");
-            String songLink160kbps,songLink320kbps;
-            songLink160kbps=songLinks.first().attr("href");
-            songLink320kbps=songLinks.last().attr("href");
-            String singers="";
-            for(Element singer:row3.getElementsByTag("a"))
-                singers+=singer.text()+", ";
-            singers=singers.substring(0,singers.length()-1);
-
+            Element row2=rows.get(i);
             JSONObject item=new JSONObject();
+            String songName=row1.getElementsByTag("strong").first().text();
+            Elements singeratags=row2.getElementsByTag("a");
+            String singers="";
+            for(Element j:singeratags) {
+                singers+=j.text()+", ";
+            }
+            singers=singers.substring(0,singers.length()-2);
+            String link160,link320;
+            Elements links=row1.getElementsByClass("text-right").first().getElementsByTag("a");
+            link160=links.get(0).attr("href");
+            link320=links.get(0).attr("href");
             try {
                 item.put("name",songName);
-                item.put("160link",songLink160kbps);
-                item.put("320link",songLink320kbps);
+                item.put("160link",link160);
+                item.put("320link",link320);
                 item.put("singers",singers);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            songsArray.put(item);
+            array.put(item);
         }
-        Element albumLinksDiv=doc.getElementsByClass("col-md-8").last();
-        Elements albumLinks=albumLinksDiv.getElementsByTag("a");
-        kbps_160_AlbumLink=albumLinks.get(0).attr("href");
-        kbps_320_AlbumLink=albumLinks.get(1).attr("href");
-        try {
-            albumJSON.put("albumContents",songsArray);
-            albumJSON.put("160kbpsZip",kbps_160_AlbumLink);
-            albumJSON.put("320kbpsZip",kbps_320_AlbumLink);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return albumJSON;
+        return array;
     }
     private String pageToString(String link) {
         TrustManager[] dummyTrustManager = new TrustManager[] { new X509TrustManager() {
@@ -183,14 +199,6 @@ public class Starmusiq {
         return p != null ? p.toString() : null;
     }
     private void writeToFile(String s){
-        PrintWriter writer= null;
-        try {
-            writer = new PrintWriter("file.txt");
-            writer.println(s);
-            writer.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
+        Log.d("tag",s);
     }
 }
