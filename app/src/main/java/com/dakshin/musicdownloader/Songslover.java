@@ -12,10 +12,10 @@ import java.io.IOException;
 import java.net.URL;
 
  class Songslover {
-    public static void searchSongslover(NetworkCallCompleteListener callback,String search) {
+    static void searchSongslover(NetworkCallCompleteListener callback,String search) {
         class X extends Thread {
             String search;
-            NetworkCallCompleteListener callback;
+            private NetworkCallCompleteListener callback;
             X(String a, NetworkCallCompleteListener callback) {
                 search=a;
                 this.callback=callback;
@@ -28,6 +28,10 @@ import java.net.URL;
                     doc = Jsoup.parse(new URL("http://songslover.live/?s="+input),50000);
                 } catch (IOException e) {
                     e.printStackTrace();
+                }
+                if(doc==null) {
+                    //this should hopefully never ever happen
+                    throw new RuntimeException();
                 }
                 Elements articles=doc.getElementsByTag("article");
                 JSONArray results=new JSONArray();
@@ -81,11 +85,14 @@ import java.net.URL;
                     e.printStackTrace();
                 }
                 Element entry=page.getElementsByClass("entry").first();
+                //for album art
+                Element img=entry.getElementsByTag("img").first();
+                String link,iconUrl;
+                try {
+                iconUrl=img.attr("src");
                 Elements p=entry.getElementsByTag("p");
                 Element span=p.get(1);
-                String link="";
-                try {
-                    link = span.getElementsByTag("a").first().attr("href");
+                link = span.getElementsByTag("a").first().attr("href");
                 } catch (NullPointerException e) {
                     callback.invalidURL();
                     return;
@@ -96,6 +103,7 @@ import java.net.URL;
                 try {
                     song.put("name",name);
                     song.put("url",link);
+                    song.put("iconUrl",iconUrl);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

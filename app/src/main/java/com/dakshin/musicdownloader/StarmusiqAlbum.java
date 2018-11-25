@@ -140,7 +140,7 @@ public class StarmusiqAlbum extends AppCompatActivity implements DownloadComplet
     }
 
     @Override
-    public void onDownloadComplete(final File file) {
+    public void onSongsloverDownloadComplete(final File file) {
         if (file.getName().contains(".zip")) {
             new Utils().unzip(file);
         }

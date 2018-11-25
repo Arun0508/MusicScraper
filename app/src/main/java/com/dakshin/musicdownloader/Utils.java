@@ -9,6 +9,7 @@ import android.util.Log;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -101,7 +102,7 @@ class Utils {
                         output.write(buffer, 0, n);
                     }
                     output.close();
-                    callback.onDownloadComplete(file);
+                    callback.onSongsloverDownloadComplete(file);
 
                 } catch (IOException e) {
                     Log.e("tag","ioexception in download queue");
@@ -114,11 +115,10 @@ class Utils {
     /**Download response headers from songslover does not contain a content-disposition. So name
      * has to be passed to the func manually
      * @param url the url of an mp3 file
-     * @param fileName name to save the file to
      * @param callback a DownloadCompleteListener is triggered when the file is ready
      */
-    void downloadFromURL_no_headers(final String url,final String fileName,final DownloadCompleteListener callback) {
-        new Thread(new Runnable() {
+    Thread downloadFromURL_no_headers(final String url,final DownloadCompleteListener callback) {
+        Thread t=new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -127,22 +127,24 @@ class Utils {
                     InputStream input = connection.getInputStream();
                     byte[] buffer = new byte[4096];
                     int n;
-                    File file=new File(Environment.getExternalStoragePublicDirectory
-                            (Environment.DIRECTORY_MUSIC),fileName);
+                    File file=new File(Environment.getExternalStorageDirectory(),
+                            "temp"+System.currentTimeMillis()+".mp3");
                     OutputStream output = new FileOutputStream(file);
                     while ((n = input.read(buffer)) != -1)
                     {
                         output.write(buffer, 0, n);
                     }
                     output.close();
-                    callback.onDownloadComplete(file);
+                    callback.onSongsloverDownloadComplete(file);
 
                 } catch (IOException e) {
                     Log.e("tag","ioexception in download queue");
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
+        t.start();
+        return t;
     }
 
     public void unzip(File zipFile) {
@@ -157,5 +159,31 @@ class Utils {
             e.printStackTrace();
         }
     }
+    Thread downloadToByteArray(final String iconUrl,final ByteArrayDownloadListener callback) {
+        Thread t=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL(iconUrl);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    try (InputStream is = url.openStream()) {
+                        byte[] byteChunk = new byte[4096];
+                        int n;
 
+                        while ((n = is.read(byteChunk)) > 0) {
+                            baos.write(byteChunk, 0, n);
+                        }
+                    } catch (IOException e) {
+                        System.err.printf("Failed while reading bytes from %s: %s", url.toExternalForm(), e.getMessage());
+                        e.printStackTrace();
+                    }
+                    callback.onByteArrayDownloadComplete(baos.toByteArray());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.start();
+        return t;
+    }
 }

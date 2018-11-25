@@ -9,10 +9,14 @@ interface NetworkCallCompleteListener {
 }
 
 interface DownloadCompleteListener {
-    void onDownloadComplete(File file);
+    void onSongsloverDownloadComplete(File file);
 }
 
 interface SongsLoverListener {
     void onURLReady(JSONObject song);
     void invalidURL();
+}
+
+interface ByteArrayDownloadListener {
+    void onByteArrayDownloadComplete(byte[] arr);
 }
