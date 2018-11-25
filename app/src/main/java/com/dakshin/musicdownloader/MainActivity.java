@@ -153,9 +153,6 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
 
                         }
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request.
         }
     }
 }

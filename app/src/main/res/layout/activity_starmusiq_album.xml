@@ -4,12 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     tools:context=".StarmusiqAlbum">
 
     <ImageView
         android:id="@+id/starmusiq_album_imageview"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:contentDescription="@string/album_icon"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,10 +22,10 @@
         android:id="@+id/album_textview_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorAccent"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/album_textview_2"
         app:layout_constraintStart_toEndOf="@+id/starmusiq_album_imageview"
         app:layout_constraintTop_toTopOf="parent" />
@@ -32,9 +34,9 @@
         android:id="@+id/album_textview_3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorAccent"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
-        android:text="TextView"
         app:layout_constraintBottom_toBottomOf="@+id/starmusiq_album_imageview"
         app:layout_constraintStart_toEndOf="@+id/starmusiq_album_imageview" />
 
@@ -42,9 +44,9 @@
         android:id="@+id/album_textview_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorAccent"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
-        android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/album_textview_3"
         app:layout_constraintStart_toEndOf="@+id/starmusiq_album_imageview" />
 
@@ -52,9 +54,11 @@
         android:id="@+id/starmusiq_albumDownload_160"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/colorAccent"
         android:layout_marginStart="8dp"
         android:onClick="download160"
-        android:text="Download 160 KBPS"
+        android:text="@string/download_160_kbps"
         app:layout_constraintBaseline_toBaselineOf="@+id/starmusiq-albumDownoad_320"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -62,10 +66,12 @@
         android:id="@+id/starmusiq-albumDownoad_320"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/colorAccent"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:onClick="download320"
-        android:text="Download 320 KBPS"
+        android:text="@string/download_320_kbps"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

@@ -1,16 +1,14 @@
 package com.dakshin.musicdownloader;
 
-import android.app.DownloadManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Environment;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,9 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class StarmusiqAlbum extends AppCompatActivity implements DownloadCompleteListener {
     private String albumName, two, three, iconLink, link;
@@ -52,11 +48,13 @@ public class StarmusiqAlbum extends AppCompatActivity implements DownloadComplet
         final ArrayList<String> arrayList = new ArrayList<>();
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1, arrayList) {
             @Override
+            @NonNull
             public View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
                 TextView text1 = view.findViewById(android.R.id.text1);
                 TextView text2 = view.findViewById(android.R.id.text2);
-
+                text1.setTextColor(ContextCompat.getColor(StarmusiqAlbum.this, R.color.colorAccent));
+                text2.setTextColor(ContextCompat.getColor(StarmusiqAlbum.this, R.color.white));
                 text1.setText(arrayList.get(2 * position));
                 text2.setText(arrayList.get(2 * position + 1));
                 return view;
@@ -93,7 +91,7 @@ public class StarmusiqAlbum extends AppCompatActivity implements DownloadComplet
                 try {
                     assert finalAlbumJson!=null;
                     final JSONObject item = finalAlbumJson.getJSONObject(position);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(StarmusiqAlbum.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(StarmusiqAlbum.this, R.style.AlertDialogCustom));
                     builder.setTitle("Choose download quality");
                     builder.setPositiveButton("160 kbps", new DialogInterface.OnClickListener() {
                         @Override

@@ -16,7 +16,7 @@
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:importantForAutofill="no"
-        android:hint="Enter search term"
+        android:hint="@string/enter_search_term"
         android:inputType="text"
         android:textColor="@color/colorAccent"
         android:textColorHint="@android:color/background_light"
@@ -33,7 +33,7 @@
         android:layout_marginTop="8dp"
         android:backgroundTint="@color/colorPrimaryDark"
         android:onClick="starmusiq"
-        android:text="@string/starmusiq"
+        android:text="starmusiq"
         android:textColor="@color/colorAccent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_bar" />
@@ -58,7 +58,7 @@
         android:layout_marginStart="8dp"
         android:backgroundTint="@color/colorPrimaryDark"
         android:onClick="songslover"
-        android:text="@string/songslover"
+        android:text="SongsLover"
         android:textColor="@color/colorAccent"
         app:layout_constraintBaseline_toBaselineOf="@+id/starmusiq"
         app:layout_constraintStart_toEndOf="@+id/starmusiq" />

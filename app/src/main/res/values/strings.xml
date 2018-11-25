@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Music Downloader</string>
     <string name="album_icon">Album Icon</string>
+    <string name="enter_search_term">Enter search term</string>
+    <string name="starmusiq">starmusiq</string>
+    <string name="songslover">SongsLover</string>
+    <string name="download_160_kbps">Download 160 KBPS</string>
+    <string name="download_320_kbps">Download 320 KBPS</string>
 </resources>

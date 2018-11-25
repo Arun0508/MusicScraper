@@ -7,10 +7,10 @@ import android.content.Intent;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.ID3v22Tag;
@@ -24,7 +24,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLConnection;
 
 public class SearchResultViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
 SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
@@ -92,7 +91,7 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
         ((Activity)context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                new AlertDialog.Builder(context)
+                new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom))
                         .setTitle("Invalid choice")
                         .setMessage("This entry is a video and not an mp3 file. Video downloads are not yet supported." +
                                 "Please choose another song.")
@@ -159,7 +158,7 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
         ((Activity)context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                new AlertDialog.Builder(context).setMessage("Downloaded "+songFile.getName())
+                new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom)).setMessage("Downloaded " + songFile.getName())
                         .setPositiveButton("Okay",null).show();
             }
         });
