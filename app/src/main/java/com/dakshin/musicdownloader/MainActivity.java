@@ -1,31 +1,20 @@
 package com.dakshin.musicdownloader;
 
-import android.app.DownloadManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NetworkCallCompleteListener{
     private ArrayList<SearchResultMenuItem> arrayList=new ArrayList<>();
     private RecyclerView listView;
     private SearchResultAdapter adapter;
@@ -41,10 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
         //set-up for utils class
         Utils.density=getResources().getDisplayMetrics().density;
-
-
-
-
         searchBar = findViewById(R.id.search_bar);
         listView=findViewById(R.id.results_listview);
         listView.setHasFixedSize(true);
@@ -53,7 +38,12 @@ public class MainActivity extends AppCompatActivity {
         adapter=new SearchResultAdapter(this,arrayList);
         listView.setAdapter(adapter);
     }
-    long refid;
+    public void songslover(View v) {
+
+        String searchTerm=searchBar.getText().toString();
+        Songslover.searchSongslover(this,searchTerm);
+
+    }
     public void starmusiq(View v) {
         arrayList.clear();
         String searchTerm=searchBar.getText().toString();
@@ -80,4 +70,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public native String stringFromJNI();
+
+    @Override
+    public void networkCallComplete(String code,JSONObject object) {
+        if(code.equals("songslover")) {
+            try {
+                arrayList.clear();
+                JSONArray results=object.getJSONArray("results");
+                for(int i=0;i<results.length();i++) {
+                    JSONObject item=results.getJSONObject(i);
+                    SearchResultMenuItem menuItem=new SearchResultMenuItem();
+                    menuItem.setLink(item.getString("url"));
+                    menuItem.setOne(item.getString("name"));
+                    menuItem.setImageUrl(item.getString("icon"));
+                    //dummy
+                    menuItem.setTwo("");
+                    menuItem.setThree("");
+                    arrayList.add(menuItem);
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

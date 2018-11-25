@@ -43,4 +43,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/starmusiq"
         app:layout_constraintVertical_bias="0.545" />
+
+    <Button
+        android:id="@+id/Songslover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:onClick="songslover"
+        android:text="Button"
+        app:layout_constraintBaseline_toBaselineOf="@+id/starmusiq"
+        app:layout_constraintStart_toEndOf="@+id/starmusiq" />
 </android.support.constraint.ConstraintLayout>

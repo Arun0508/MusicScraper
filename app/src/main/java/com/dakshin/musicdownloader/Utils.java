@@ -46,7 +46,7 @@ class Utils {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return getResizedBitmap(result[0],100,100);
+        return getResizedBitmap(result[0],pxFromDp(100),pxFromDp(100));
     }
     private static Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
         int width = bm.getWidth();
@@ -64,12 +64,12 @@ class Utils {
 
         return resizedBitmap;
     }
-    private int pxFromDp(int dp)
+    private static int pxFromDp(int dp)
     {
         return dp *(int)density;
     }
 
-    private int dpFromPx(int px)
+    private static int dpFromPx(int px)
     {
         return px /(int)density;
     }
@@ -98,7 +98,6 @@ class Utils {
                         output.write(buffer, 0, n);
                     }
                     output.close();
-                    //todo: send some kind of callback to StarmusiqAlbum
                     callback.onDownloadComplete(file);
 
                 } catch (IOException e) {
