@@ -61,34 +61,49 @@ import java.net.URL;
         }
         new X(search,callback);
     }
-    public static JSONObject downloadSongslover(String url) throws NotASongLinkException{
-        Document page= null;
-        try {
-            page = Jsoup.parse(new URL(url),50000);
-        } catch (IOException e) {
-            e.printStackTrace();
+    void downloadSongslover(String url, SongsLoverListener callback){
+        class X extends Thread {
+            String url;
+            SongsLoverListener callback;
+
+            public X(String url, SongsLoverListener callback) {
+                this.url = url;
+                this.callback = callback;
+                start();
+            }
+
+            public void run()
+            {
+                Document page= null;
+                try {
+                    page = Jsoup.parse(new URL(url),50000);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Element entry=page.getElementsByClass("entry").first();
+                Elements p=entry.getElementsByTag("p");
+                Element span=p.get(1);
+                String link="";
+                try {
+                    link = span.getElementsByTag("a").first().attr("href");
+                } catch (NullPointerException e) {
+                    callback.invalidURL();
+                    return;
+                }
+                String[] x=link.split("/");
+                String name=x[x.length-1].replace("%20"," ");
+                JSONObject song=new JSONObject();
+                try {
+                    song.put("name",name);
+                    song.put("url",link);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                callback.onURLReady(song);
+            }
         }
-        Element entry=page.getElementsByClass("entry").first();
-        Elements p=entry.getElementsByTag("p");
-        Element span=p.get(1);
-        String link;
-        try {
-            link = span.getElementsByTag("a").first().attr("href");
-        } catch (NullPointerException e) {
-            throw new NotASongLinkException();
-        }
-        String[] x=link.split("/");
-        String name=x[x.length-1].replace("%20"," ");
-        JSONObject song=new JSONObject();
-        try {
-            song.put("name",name);
-            song.put("url",link);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return song;
+        new X(url, callback);
+
     }
 
 }
-
-class NotASongLinkException extends Exception {}

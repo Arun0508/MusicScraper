@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:onClick="songslover"
-        android:text="Button"
+        android:text="SongsLover"
         app:layout_constraintBaseline_toBaselineOf="@+id/starmusiq"
         app:layout_constraintStart_toEndOf="@+id/starmusiq" />
 </android.support.constraint.ConstraintLayout>

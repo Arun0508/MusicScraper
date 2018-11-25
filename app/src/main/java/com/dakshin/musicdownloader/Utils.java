@@ -22,6 +22,9 @@ import java.util.Map;
 
 class Utils {
     public static float density;
+    static String starmusiq="starmusiq";
+    static String songslover="songslover";
+    static String currentSite=starmusiq; //holds which site is being searched
     static Bitmap getBitmapFromURL(final String src) {
         final Bitmap[] result = {null};
         Thread t=new Thread(new Runnable() {
@@ -107,6 +110,41 @@ class Utils {
             }
         }).start();
     }
+
+    /**Download response headers from songslover does not contain a content-disposition. So name
+     * has to be passed to the func manually
+     * @param url the url of an mp3 file
+     * @param fileName name to save the file to
+     * @param callback a DownloadCompleteListener is triggered when the file is ready
+     */
+    void downloadFromURL_no_headers(final String url,final String fileName,final DownloadCompleteListener callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL _url=new URL(url);
+                    URLConnection connection=_url.openConnection();
+                    InputStream input = connection.getInputStream();
+                    byte[] buffer = new byte[4096];
+                    int n;
+                    File file=new File(Environment.getExternalStoragePublicDirectory
+                            (Environment.DIRECTORY_MUSIC),fileName);
+                    OutputStream output = new FileOutputStream(file);
+                    while ((n = input.read(buffer)) != -1)
+                    {
+                        output.write(buffer, 0, n);
+                    }
+                    output.close();
+                    callback.onDownloadComplete(file);
+
+                } catch (IOException e) {
+                    Log.e("tag","ioexception in download queue");
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     public void unzip(File zipFile) {
         String unzipDirectory=zipFile.getParentFile().getAbsolutePath();
         try {

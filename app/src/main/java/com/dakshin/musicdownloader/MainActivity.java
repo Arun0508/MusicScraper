@@ -39,13 +39,15 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
         listView.setAdapter(adapter);
     }
     public void songslover(View v) {
-
+        Utils.currentSite=Utils.songslover;
+        arrayList.clear();
         String searchTerm=searchBar.getText().toString();
         Songslover.searchSongslover(this,searchTerm);
-
+        adapter.notifyDataSetChanged();
     }
     public void starmusiq(View v) {
         arrayList.clear();
+        Utils.currentSite=Utils.starmusiq;
         String searchTerm=searchBar.getText().toString();
         Starmusiq searcher=new Starmusiq();
         JSONObject searchResults=searcher.searchStarmusiq(searchTerm);
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
     public void networkCallComplete(String code,JSONObject object) {
         if(code.equals("songslover")) {
             try {
-                arrayList.clear();
+
                 JSONArray results=object.getJSONArray("results");
                 for(int i=0;i<results.length();i++) {
                     JSONObject item=results.getJSONObject(i);
