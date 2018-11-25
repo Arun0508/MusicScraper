@@ -1,4 +1,5 @@
 package com.dakshin.musicdownloader;
+
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -9,29 +10,39 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 public class Starmusiq {
     JSONObject json;
-    public String zipUrl(String pageUrl) {
-        Document page=Jsoup.parse(pageToString(pageUrl));
-        Element div=page.getElementsByClass("inner cover").first();
-        String link=div.getElementsByTag("a").first().attr("href");
-        return "http://www.starfile.fun/download-7s-zip-new/"+link;
+    public String zipUrl(final String pageUrl) {
+        final StringBuilder link=new StringBuilder();
+        Thread t =new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Document page=Jsoup.parse(pageToString(pageUrl));
+                Element div=page.getElementsByClass("inner cover").first();
+                link.append(div.getElementsByTag("a").first().attr("href"));
+            }
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "http://www.starfile.fun/download-7s-zip-new/"+link.toString();
     }
     public String songUrl(final String pageUrl){
 //        Document page=Jsoup.parse(pageToString(pageUrl));

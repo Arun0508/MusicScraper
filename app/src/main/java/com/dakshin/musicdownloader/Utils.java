@@ -1,14 +1,13 @@
 package com.dakshin.musicdownloader;
 
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
+
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -91,17 +90,16 @@ class Utils {
                     InputStream input = connection.getInputStream();
                     byte[] buffer = new byte[4096];
                     int n;
-
-                    OutputStream output = new FileOutputStream(
-                            new File(Environment.getExternalStoragePublicDirectory
-                                    (Environment.DIRECTORY_MUSIC),filename));
+                    File file=new File(Environment.getExternalStoragePublicDirectory
+                            (Environment.DIRECTORY_MUSIC),filename);
+                    OutputStream output = new FileOutputStream(file);
                     while ((n = input.read(buffer)) != -1)
                     {
                         output.write(buffer, 0, n);
                     }
                     output.close();
                     //todo: send some kind of callback to StarmusiqAlbum
-                    callback.onDownloadComplete(filename);
+                    callback.onDownloadComplete(file);
 
                 } catch (IOException e) {
                     Log.e("tag","ioexception in download queue");
@@ -109,6 +107,18 @@ class Utils {
                 }
             }
         }).start();
-
     }
+    public void unzip(File zipFile) {
+        String unzipDirectory=zipFile.getParentFile().getAbsolutePath();
+        try {
+            Log.d("tag","starting unzip");
+            ZipFile zipFile1=new ZipFile(zipFile.getAbsolutePath());
+            zipFile1.extractAll(unzipDirectory);
+            Log.d("tag","finished unzip");
+            zipFile.delete();
+        } catch (ZipException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
