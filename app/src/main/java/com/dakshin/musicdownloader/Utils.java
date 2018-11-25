@@ -1,12 +1,25 @@
 package com.dakshin.musicdownloader;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.net.Uri;
+import android.os.Environment;
+import android.util.Log;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.List;
+import java.util.Map;
 
 class Utils {
     public static float density;
@@ -60,5 +73,42 @@ class Utils {
     private int dpFromPx(int px)
     {
         return px /(int)density;
+    }
+
+    void downloadFromURL(final DownloadCompleteListener callback, final String url) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL _url=new URL(url);
+                    URLConnection connection=_url.openConnection();
+                    Map<String, List<String>> map = connection.getHeaderFields();
+
+                    //get header by 'key'
+                    String filename = connection.getHeaderField("Content-Disposition").split("filename=")[1];
+                    //remove the quotes around the filename
+                    filename=filename.substring(1,filename.length()-1);
+                    InputStream input = connection.getInputStream();
+                    byte[] buffer = new byte[4096];
+                    int n;
+
+                    OutputStream output = new FileOutputStream(
+                            new File(Environment.getExternalStoragePublicDirectory
+                                    (Environment.DIRECTORY_MUSIC),filename));
+                    while ((n = input.read(buffer)) != -1)
+                    {
+                        output.write(buffer, 0, n);
+                    }
+                    output.close();
+                    //todo: send some kind of callback to StarmusiqAlbum
+                    callback.onDownloadComplete(filename);
+
+                } catch (IOException e) {
+                    Log.e("tag","ioexception in download queue");
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 }

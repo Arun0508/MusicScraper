@@ -26,7 +26,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StarmusiqAlbum extends AppCompatActivity {
+public class StarmusiqAlbum extends AppCompatActivity implements DownloadCompleteListener{
     private String albumName,two,three,iconLink,link;
 
     @Override
@@ -94,15 +94,7 @@ public class StarmusiqAlbum extends AppCompatActivity {
                                 String link=item.getString("160link");
                                 link=starmusiq.songUrl(link);
                                 Log.d("tag","160link: "+link);
-                                DownloadManager.Request request=new DownloadManager.Request(Uri.parse(link));
-                                request.setTitle("download");
-                                request.setDescription("music");
-                                request.setDestinationInExternalFilesDir(StarmusiqAlbum.this,Environment.DIRECTORY_MUSIC,"download.mp3");
-                                request.allowScanningByMediaScanner();
-                                manager.enqueue(request);
-                                Log.d("tag","request enqueed.");
-                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
-                                startActivity(browserIntent);
+                                new Utils().downloadFromURL(StarmusiqAlbum.this,link);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -131,10 +123,21 @@ public class StarmusiqAlbum extends AppCompatActivity {
             }
         });
     }
+
     public void download160(View v) {
         //todo
     }
     public void download320(View v) {
         //todo
+    }
+
+    @Override
+    public void onDownloadComplete(final String fileName) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(StarmusiqAlbum.this, "Downloaded "+fileName, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
