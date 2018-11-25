@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -51,10 +52,10 @@ public class StarmusiqAlbum extends AppCompatActivity implements DownloadComplet
         final ArrayList<String> arrayList = new ArrayList<>();
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1, arrayList) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
-                TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-                TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+                TextView text1 = view.findViewById(android.R.id.text1);
+                TextView text2 = view.findViewById(android.R.id.text2);
 
                 text1.setText(arrayList.get(2 * position));
                 text2.setText(arrayList.get(2 * position + 1));
@@ -68,7 +69,7 @@ public class StarmusiqAlbum extends AppCompatActivity implements DownloadComplet
         };
         listView.setAdapter(adapter);
         final Starmusiq starmusiq = new Starmusiq();
-        JSONObject albumJson = null;
+        JSONObject albumJson;
         JSONArray albumContentsJson = null;
         try {
             albumJson = starmusiq.openAlbum(link);
@@ -90,6 +91,7 @@ public class StarmusiqAlbum extends AppCompatActivity implements DownloadComplet
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
+                    assert finalAlbumJson!=null;
                     final JSONObject item = finalAlbumJson.getJSONObject(position);
                     AlertDialog.Builder builder = new AlertDialog.Builder(StarmusiqAlbum.this);
                     builder.setTitle("Choose download quality");

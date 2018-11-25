@@ -63,10 +63,9 @@ class Utils {
         matrix.postScale(scaleWidth, scaleHeight);
 
         // "RECREATE" THE NEW BITMAP
-        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height,
-                matrix, false);
 
-        return resizedBitmap;
+        return Bitmap.createBitmap(bm, 0, 0, width, height,
+                matrix, false);
     }
     private static int pxFromDp(int dp)
     {
@@ -147,7 +146,7 @@ class Utils {
         return t;
     }
 
-    public void unzip(File zipFile) {
+    void unzip(File zipFile) {
         String unzipDirectory=zipFile.getParentFile().getAbsolutePath();
         try {
             Log.d("tag","starting unzip");

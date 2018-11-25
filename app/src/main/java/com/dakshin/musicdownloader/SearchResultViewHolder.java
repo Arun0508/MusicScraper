@@ -28,15 +28,15 @@ import java.net.URLConnection;
 
 public class SearchResultViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
 SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
-    ImageView imageView;
-    TextView textView1, textView2,textView3;
-    SearchResultMenuItem menuItem;
+    private ImageView imageView;
+    private TextView textView1, textView2,textView3;
+    private SearchResultMenuItem menuItem;
     private Context context;
     private byte[] icon; //used to hold album art for songslover
     private File songFile;
     private String songName;
 
-    public SearchResultViewHolder(Context context, View convertView) {
+    SearchResultViewHolder(Context context, View convertView) {
         super(convertView);
         this.context=context;
         imageView=convertView.findViewById(R.id.search_result_image_view);
@@ -65,7 +65,7 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
         }
     }
 
-    public void bindItem(SearchResultMenuItem item) {
+    void bindItem(SearchResultMenuItem item) {
         this.menuItem=item;
         imageView.setImageBitmap(Utils.getBitmapFromURL(item.getImageUrl()));
         textView1.setText(item.getOne());
@@ -126,7 +126,7 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
         assert (songFile!=null && icon!=null);
         String path=songFile.getAbsolutePath();
         Log.d("tag","inside addArtToDownload");
-        Mp3File file= null;
+        Mp3File file;
         try {
             file = new Mp3File(songFile);
             Log.d("tag","init file name: "+songFile.getName());
