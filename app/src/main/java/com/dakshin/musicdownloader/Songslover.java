@@ -67,8 +67,8 @@ import java.net.URL;
     }
     void downloadSongslover(String url, SongsLoverListener callback){
         class X extends Thread {
-            String url;
-            SongsLoverListener callback;
+            private String url;
+            private SongsLoverListener callback;
 
             public X(String url, SongsLoverListener callback) {
                 this.url = url;
@@ -84,6 +84,7 @@ import java.net.URL;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                if(page==null) throw new RuntimeException(); //this should never ever happen
                 Element entry=page.getElementsByClass("entry").first();
                 //for album art
                 Element img=entry.getElementsByTag("img").first();
