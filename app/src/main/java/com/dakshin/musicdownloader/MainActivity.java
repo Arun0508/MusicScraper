@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
         listView.setLayoutManager(new LinearLayoutManager(this));
         //itemdecorator
         adapter=new SearchResultAdapter(this,arrayList);
+        adapter.setHasStableIds(true);
         listView.setAdapter(adapter);
     }
     public void songslover(View v) {
@@ -134,24 +136,22 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case STORAGE_REQUEST_CODE: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                } else {
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("Permission denied")
-                            .setMessage("This app cannot run without storage permission. The app will now exit.")
-                            .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    MainActivity.this.finish();
-                                }
-                            }).show();
+                if (grantResults.length <= 0
+                        || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("Permission denied")
+                                    .setMessage("This app cannot run without storage permission. The app will now exit.")
+                                    .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            MainActivity.this.finish();
+                                        }
+                                    }).show();
 
-                }
-                return;
+                        }
             }
 
             // other 'case' lines to check for other
