@@ -1,6 +1,12 @@
 package com.dakshin.musicdownloader;
 
+import android.Manifest;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
     private ArrayList<SearchResultMenuItem> arrayList=new ArrayList<>();
     private RecyclerView listView;
     private SearchResultAdapter adapter;
+    private final int STORAGE_REQUEST_CODE=911;
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
@@ -30,6 +37,29 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
 
         //set-up for utils class
         Utils.density=getResources().getDisplayMetrics().density;
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                new AlertDialog.Builder(this).setTitle("Permission denied")
+                        .setMessage("This app cannot run without storage permission.")
+                        .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(MainActivity.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                        STORAGE_REQUEST_CODE);
+                            }
+                        }).show();
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        STORAGE_REQUEST_CODE);
+            }
+        }
+
         searchBar = findViewById(R.id.search_bar);
         listView=findViewById(R.id.results_listview);
         listView.setHasFixedSize(true);
@@ -99,6 +129,33 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case STORAGE_REQUEST_CODE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Permission denied")
+                            .setMessage("This app cannot run without storage permission. The app will now exit.")
+                            .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    MainActivity.this.finish();
+                                }
+                            }).show();
+
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
         }
     }
 }
