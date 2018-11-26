@@ -53,6 +53,8 @@ class Utils {
         return getResizedBitmap(result[0],pxFromDp(100),pxFromDp(100));
     }
     private static Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
+        if (bm == null)
+            return bm;
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
@@ -163,6 +165,8 @@ class Utils {
             @Override
             public void run() {
                 try {
+                    if (iconUrl.equals(""))
+                        callback.onByteArrayDownloadComplete(null);
                     URL url = new URL(iconUrl);
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     try (InputStream is = url.openStream()) {

@@ -15,7 +15,7 @@
         android:contentDescription="@string/album_icon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:color/holo_blue_light" />
+        app:srcCompat="@android:color/darker_gray" />
 
     <TextView
         android:id="@+id/result_textView_1"

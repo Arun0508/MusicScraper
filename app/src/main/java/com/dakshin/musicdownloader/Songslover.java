@@ -89,9 +89,32 @@ import java.net.URL;
                 //for album art
                 Element img=entry.getElementsByTag("img").first();
                 String link,iconUrl;
+                if (img != null)
+                    iconUrl = img.attr("src");
+                else {
+                    iconUrl = "";
+                    try {
+                        link = entry.getElementsByTag("h1").first().getElementsByTag("a").attr("href");
+                    } catch (NullPointerException e) {
+                        callback.invalidURL();
+                        return;
+                    }
+                    String[] x = link.split("/");
+                    String name = x[x.length - 1].replace("%20", " ");
+                    JSONObject song = new JSONObject();
+                    try {
+                        song.put("name", name);
+                        song.put("url", link);
+                        song.put("iconUrl", iconUrl);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    callback.onURLReady(song);
+                    return;
+                }
                 try {
-                iconUrl=img.attr("src");
-                Elements p=entry.getElementsByTag("p");
+
+                    Elements p=entry.getElementsByTag("p");
                 Element span=p.get(1);
                 link = span.getElementsByTag("a").first().attr("href");
                 } catch (NullPointerException e) {

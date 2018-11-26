@@ -81,6 +81,12 @@ public class StarmusiqAlbum extends AppCompatActivity implements DownloadComplet
 
             zip160 = albumJson.getString("160kbpsZip");
             zip320 = albumJson.getString("320kbpsZip");
+            if (zip160.equals(""))
+                //disable the 160 button
+                findViewById(R.id.starmusiq_albumDownload_160).setVisibility(View.GONE);
+            else if (zip320.equals(""))
+                //disable the 320 button;
+                findViewById(R.id.starmusiq_albumDownoad_320).setVisibility(View.GONE);
         } catch (JSONException e) {
             e.printStackTrace();
         }

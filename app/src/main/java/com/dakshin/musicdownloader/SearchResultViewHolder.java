@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -34,6 +35,7 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
     private byte[] icon; //used to hold album art for songslover
     private File songFile;
     private String songName;
+    private boolean noIcon = false;
 
     SearchResultViewHolder(Context context, View convertView) {
         super(convertView);
@@ -66,7 +68,8 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
 
     void bindItem(SearchResultMenuItem item) {
         this.menuItem=item;
-        imageView.setImageBitmap(Utils.getBitmapFromURL(item.getImageUrl()));
+        Bitmap bitmap = Utils.getBitmapFromURL(item.getImageUrl());
+        imageView.setImageBitmap(bitmap);
         textView1.setText(item.getOne());
         textView2.setText(item.getTwo());
         textView3.setText(item.getThree());
@@ -105,12 +108,24 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
     public void onSongsloverDownloadComplete(final File file) {
         Log.d("tag","mp3 download complete");
         songFile=file;
-        while(icon==null){
+        while (icon == null && !noIcon) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e){
                 e.printStackTrace();
             }
+        }
+        if (noIcon) {
+            songFile.renameTo(new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_MUSIC), songName));
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom)).setMessage("Downloaded " + songName)
+                            .setPositiveButton("Okay", null).show();
+                }
+            });
+            return;
         }
         addArtToDownload();
     }
@@ -119,6 +134,8 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
     public void onByteArrayDownloadComplete(byte[] arr) {
         Log.d("tag","icon download complete");
         icon=arr;
+        if (icon == null)
+            noIcon = true;
     }
 
     private void addArtToDownload(){

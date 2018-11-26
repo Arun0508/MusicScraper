@@ -134,8 +134,13 @@ public class Starmusiq {
                 String kbps_160_AlbumLink, kbps_320_AlbumLink;
                 Element albumLinksDiv = doc.getElementsByClass("col-md-8").last();
                 Elements albumLinks = albumLinksDiv.getElementsByTag("a");
-                kbps_160_AlbumLink = albumLinks.get(0).attr("href");
-                kbps_320_AlbumLink = albumLinks.get(1).attr("href");
+                try {
+                    kbps_160_AlbumLink = albumLinks.get(0).attr("href");
+                    kbps_320_AlbumLink = albumLinks.get(1).attr("href");
+                } catch (IndexOutOfBoundsException e) {
+                    kbps_160_AlbumLink = "";
+                    kbps_320_AlbumLink = "";
+                }
                 try {
                     albumJSON.put("albumContents", otherAlbumOpenMethod(table));
                     albumJSON.put("160kbpsZip", kbps_160_AlbumLink);
