@@ -14,6 +14,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
     private ArrayList<SearchResultMenuItem> arrayList=new ArrayList<>();
     private RecyclerView listView;
     private SearchResultAdapter adapter;
+    private AdView adView;
     private final int STORAGE_REQUEST_CODE=911;
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -35,6 +41,12 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        MobileAds.initialize(this,"ca-app-pub-4488089785718954~8167908136");
+
+        adView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
 
         //set-up for utils class
         Utils.density=getResources().getDisplayMetrics().density;

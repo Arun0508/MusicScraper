@@ -22,6 +22,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".StarmusiqAlbum"></activity>
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4488089785718954~8167908136"/>
     </application>
 
 </manifest>
