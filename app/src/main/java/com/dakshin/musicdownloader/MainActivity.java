@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
     private RecyclerView listView;
     private SearchResultAdapter adapter;
     private AdView adView;
+    String TAG="tag";
     private final int STORAGE_REQUEST_CODE=911;
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -41,7 +44,8 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        setSupportActionBar((Toolbar)findViewById(R.id.toolbar_main_activity));
+        getSupportActionBar().setTitle("windowTitle");
         MobileAds.initialize(this,"ca-app-pub-4488089785718954~8167908136");
 
         adView = findViewById(R.id.adView);
@@ -77,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
         listView=findViewById(R.id.results_listview);
         listView.setHasFixedSize(true);
         listView.setLayoutManager(new LinearLayoutManager(this));
-        //itemdecorator
         adapter=new SearchResultAdapter(this,arrayList);
         adapter.setHasStableIds(true);
         listView.setAdapter(adapter);
@@ -94,31 +97,25 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
         Utils.currentSite=Utils.starmusiq;
         String searchTerm=searchBar.getText().toString();
         Starmusiq searcher=new Starmusiq();
-        JSONObject searchResults=searcher.searchStarmusiq(searchTerm);
-        try {
-            JSONArray resultsArray = searchResults.getJSONArray("results");
-            for(int i=0;i<resultsArray.length();i++) {
-                JSONObject json=resultsArray.getJSONObject(i);
-                SearchResultMenuItem item = new SearchResultMenuItem();
-                item.setImageUrl(json.getString("picURL"));
-                item.setLink(json.getString("link"));
-                item.setOne(json.getString("albumName"));
-                item.setTwo(json.getString("composerName"));
-                item.setThree(json.getString("actors"));
-                arrayList.add(item);
+        searcher.searchStarmusiq(this,searchTerm);
 
-            }
-        } catch(JSONException e) {
-            Log.e("tag","JSONException caught");
-        }
         adapter.notifyDataSetChanged();
-//        Log.d("tag","size of arraylist: "+arrayList.size());
     }
 
     public native String stringFromJNI();
 
     @Override
     public void networkCallComplete(String code,JSONObject object) {
+        if(object==null)
+        {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, "No results found", Toast.LENGTH_SHORT).show();
+                }
+            });
+            return;
+        }
         if(code.equals("songslover")) {
             try {
 
@@ -142,6 +139,41 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
                 });
             } catch (JSONException e) {
                 e.printStackTrace();
+            }
+        } else if(code.equals("starmusiq")) {
+            try {
+                Log.d(TAG, "networkCallComplete: starmusiq results obtained");
+                JSONArray resultsArray = object.getJSONArray("results");
+                if(resultsArray.length()==0)
+                {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "No results found", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    });
+                }
+                for(int i=0;i<resultsArray.length();i++) {
+                    JSONObject json=resultsArray.getJSONObject(i);
+                    SearchResultMenuItem item = new SearchResultMenuItem();
+                    item.setImageUrl(json.getString("picURL"));
+                    item.setLink(json.getString("link"));
+                    item.setOne(json.getString("albumName"));
+                    item.setTwo(json.getString("composerName"));
+                    item.setThree(json.getString("actors"));
+                    arrayList.add(item);
+
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            } catch(JSONException e) {
+                Log.e("tag","JSONException caught");
+                Log.e("tag",object.toString());
             }
         }
     }

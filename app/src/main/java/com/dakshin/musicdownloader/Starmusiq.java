@@ -25,6 +25,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 public class Starmusiq {
+    String TAG="tag";
     JSONObject json;
     public String zipUrl(final String pageUrl) {
         final StringBuilder link=new StringBuilder();
@@ -70,7 +71,7 @@ public class Starmusiq {
         }
         return "http://www.starfile.fun/download-7s-sng-new/"+link.toString();
     }
-    public JSONObject searchStarmusiq(final String searchterm) {
+    void searchStarmusiq(final NetworkCallCompleteListener listener,final String searchterm) {
         final JSONObject resultsJSON=new JSONObject();
         final Thread t=new Thread(new Runnable() {
             @Override
@@ -105,6 +106,8 @@ public class Starmusiq {
                     }
                     try {
                         resultsJSON.put("results",resultsArray);
+                        Log.d(TAG, "starmusiq: results are ready");
+                        listener.networkCallComplete("starmusiq",resultsJSON);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -114,12 +117,7 @@ public class Starmusiq {
             }
         });
         t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return resultsJSON;
+
     }
 
     public JSONObject openAlbum(final String albumURL) {
