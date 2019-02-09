@@ -12,6 +12,7 @@ import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.ID3v22Tag;
@@ -50,6 +51,9 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
     @Override
     public void onClick(View v) {
         if(menuItem!=null) {
+            Toast.makeText(context, "Please wait", Toast.LENGTH_SHORT).show();
+
+            MainActivity.progressBar.setVisibility(View.VISIBLE);
             if (Utils.currentSite.equals(Utils.starmusiq)) {
                 Intent intent=new Intent(context,StarmusiqAlbum.class);
                 intent.putExtra("link",menuItem.getLink());
@@ -58,8 +62,10 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
                 intent.putExtra("one", menuItem.getOne());
                 intent.putExtra("two",menuItem.getTwo());
                 intent.putExtra("three",menuItem.getThree());
+                MainActivity.progressBar.setVisibility(View.INVISIBLE);
                 context.startActivity(intent);
             } else if(Utils.currentSite.equals(Utils.songslover)){
+                MainActivity.progressBar.setVisibility(View.VISIBLE);
                 String link=menuItem.getLink();
                 new Songslover().downloadSongslover(link, this);
             }
@@ -78,6 +84,7 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
     @Override
     public void onURLReady(JSONObject song) {
         try {
+            MainActivity.progressBar.setVisibility(View.VISIBLE);
             songName=song.getString("name");
             Thread t1=new Utils().downloadFromURL_no_headers(song.getString("url"),
                     this);

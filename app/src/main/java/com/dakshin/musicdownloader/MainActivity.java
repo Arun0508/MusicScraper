@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,13 +34,14 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
     private SearchResultAdapter adapter;
     private AdView adView;
     String TAG="tag";
-    private ProgressBar progressBar;
+    static ProgressBar progressBar;
     private final int STORAGE_REQUEST_CODE=911;
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
     }
     private EditText searchBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
         progressBar.setVisibility(ProgressBar.VISIBLE);
         MobileAds.initialize(this,"ca-app-pub-4488089785718954~8167908136");
 
-        adView = findViewById(R.id.adView);
+        adView = findViewById(R.id.adView_starmusiq);
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
             }
         } else if(code.equals("starmusiq")) {
             try {
-                Log.d(TAG, "networkCallComplete: starmusiq results obtained");
+//                Log.d(TAG, "networkCallComplete: starmusiq results obtained");
                 JSONArray resultsArray = object.getJSONArray("results");
                 if(resultsArray.length()==0)
                 {
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
                 });
             } catch(JSONException e) {
                 Log.e("tag","JSONException caught");
-                Log.e("tag",object.toString());
+//                Log.e("tag",object.toString());
             }
         }
     }

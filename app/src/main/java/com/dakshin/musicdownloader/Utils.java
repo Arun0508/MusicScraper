@@ -25,6 +25,7 @@ class Utils {
     public static float density;
     static String starmusiq="starmusiq";
     static String songslover="songslover";
+    static String starmusiq_activity="starmusiq_activity";
     static String currentSite=starmusiq; //holds which site is being searched
     static Bitmap getBitmapFromURL(final String src) {
         final Bitmap[] result = {null};

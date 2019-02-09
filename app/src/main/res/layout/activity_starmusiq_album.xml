@@ -54,11 +54,11 @@
         android:id="@+id/starmusiq_albumDownload_160"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:background="@color/colorPrimaryDark"
-        android:textColor="@color/colorAccent"
-        android:layout_marginStart="8dp"
         android:onClick="download160"
         android:text="@string/download_160_kbps"
+        android:textColor="@color/colorAccent"
         app:layout_constraintBaseline_toBaselineOf="@+id/starmusiq-albumDownoad_320"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -67,12 +67,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
-        android:textColor="@color/colorAccent"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:onClick="download320"
+        android:paddingBottom="0dp"
         android:text="@string/download_320_kbps"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toTopOf="@+id/adView_starmusiq"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ListView
@@ -82,9 +81,23 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/starmusiq_albumDownload_160"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/starmusiq_album_imageview" />
+
+    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView_starmusiq"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-4488089785718954/3308991135"
+        ads:layout_constraintBottom_toBottomOf="parent"
+        ads:layout_constraintEnd_toEndOf="parent"
+        ads:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

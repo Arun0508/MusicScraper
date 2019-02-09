@@ -18,17 +18,26 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
-public class StarmusiqAlbum extends AppCompatActivity implements DownloadCompleteListener {
+public class StarmusiqAlbum extends AppCompatActivity
+        implements DownloadCompleteListener, NetworkCallCompleteListener{
     private String albumName, two, three, iconLink, link;
     private String zip160, zip320;
-
+    final ArrayList<String> arrayList = new ArrayList<>();
+    final Starmusiq starmusiq=new Starmusiq();
+    private ArrayAdapter adapter;
+    private ListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,9 +53,9 @@ public class StarmusiqAlbum extends AppCompatActivity implements DownloadComplet
         ((TextView) findViewById(R.id.album_textview_1)).setText(albumName);
         ((TextView) findViewById(R.id.album_textview_2)).setText(two);
         ((TextView) findViewById(R.id.album_textview_3)).setText(three);
-        ListView listView = findViewById(R.id.starmusiq_album_listview);
-        final ArrayList<String> arrayList = new ArrayList<>();
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1, arrayList) {
+        listView = findViewById(R.id.starmusiq_album_listview);
+
+        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1, arrayList) {
             @Override
             @NonNull
             public View getView(int position, View convertView, @NonNull ViewGroup parent) {
@@ -66,19 +75,52 @@ public class StarmusiqAlbum extends AppCompatActivity implements DownloadComplet
             }
         };
         listView.setAdapter(adapter);
-        final Starmusiq starmusiq = new Starmusiq();
-        JSONObject albumJson;
+        starmusiq.openAlbum(this,link);
+
+        AdView adview = findViewById(R.id.adView_starmusiq);
+        adview.loadAd(new AdRequest.Builder().build());
+    }
+
+    public void download160(View v) {
+        String link = new Starmusiq().zipUrl(zip160);
+        new Utils().downloadFromURL(this, link);
+    }
+
+    public void download320(View v) {
+        String link = new Starmusiq().zipUrl(zip320);
+        new Utils().downloadFromURL(this, link);
+    }
+
+    @Override
+    public void onSongsloverDownloadComplete(final File file) {
+        if (file.getName().contains(".zip")) {
+            new Utils().unzip(file);
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(StarmusiqAlbum.this, "Downloaded " + file.getName(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void networkCallComplete(String code, JSONObject albumJson) {
         JSONArray albumContentsJson = null;
         try {
-            albumJson = starmusiq.openAlbum(link);
+
             albumContentsJson = albumJson.getJSONArray("albumContents");
             for (int i = 0; i < albumContentsJson.length(); i++) {
                 JSONObject item = albumContentsJson.getJSONObject(i);
                 arrayList.add(item.getString("name"));
                 arrayList.add(item.getString("singers"));
             }
-            adapter.notifyDataSetChanged();
-
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyDataSetChanged();
+                }
+            });
             zip160 = albumJson.getString("160kbpsZip");
             zip320 = albumJson.getString("320kbpsZip");
             if (zip160.equals(""))
@@ -117,7 +159,7 @@ public class StarmusiqAlbum extends AppCompatActivity implements DownloadComplet
                         public void onClick(DialogInterface dialog, int which) {
                             try {
                                 String link = item.getString("320link");
-                                link = starmusiq.songUrl(link);
+                                link = new Starmusiq().songUrl(link);
                                 Log.d("tag", "320link: " + link);
                                 new Utils().downloadFromURL(StarmusiqAlbum.this, link);
                             } catch (JSONException e) {
@@ -130,30 +172,6 @@ public class StarmusiqAlbum extends AppCompatActivity implements DownloadComplet
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            }
-        });
-
-    }
-
-    public void download160(View v) {
-        String link = new Starmusiq().zipUrl(zip160);
-        new Utils().downloadFromURL(this, link);
-    }
-
-    public void download320(View v) {
-        String link = new Starmusiq().zipUrl(zip320);
-        new Utils().downloadFromURL(this, link);
-    }
-
-    @Override
-    public void onSongsloverDownloadComplete(final File file) {
-        if (file.getName().contains(".zip")) {
-            new Utils().unzip(file);
-        }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(StarmusiqAlbum.this, "Downloaded " + file.getName(), Toast.LENGTH_SHORT).show();
             }
         });
     }

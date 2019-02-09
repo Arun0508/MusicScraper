@@ -24,17 +24,20 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-public class Starmusiq {
-    String TAG="tag";
+class Starmusiq {
+    private String TAG="tag";
     JSONObject json;
-    public String zipUrl(final String pageUrl) {
+    String zipUrl(final String pageUrl) {
         final StringBuilder link=new StringBuilder();
         Thread t =new Thread(new Runnable() {
             @Override
             public void run() {
-                Document page=Jsoup.parse(pageToString(pageUrl));
-                Element div=page.getElementsByClass("inner cover").first();
-                link.append(div.getElementsByTag("a").first().attr("href"));
+                String string=pageToString(pageUrl);
+                if(string!=null) {
+                    Document page = Jsoup.parse(string);
+                    Element div = page.getElementsByClass("inner cover").first();
+                    link.append(div.getElementsByTag("a").first().attr("href"));
+                }
             }
         });
         t.start();
@@ -45,7 +48,7 @@ public class Starmusiq {
         }
         return "http://www.starfile.fun/download-7s-zip-new/"+link.toString();
     }
-    public String songUrl(final String pageUrl){
+    String songUrl(final String pageUrl){
 //        Document page=Jsoup.parse(pageToString(pageUrl));
         Document page= null;
         final StringBuilder link=new StringBuilder();
@@ -120,14 +123,17 @@ public class Starmusiq {
 
     }
 
-    public JSONObject openAlbum(final String albumURL) {
+    void openAlbum(final NetworkCallCompleteListener listener,final String albumURL) {
         final JSONObject albumJSON=new JSONObject();
         final JSONArray songsArray=new JSONArray();
         Log.d("tag", "open album url " + albumURL);
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                Document doc = Jsoup.parse(pageToString(albumURL));
+                String string=pageToString(albumURL);
+                if(string==null)
+                    return;
+                Document doc = Jsoup.parse(string);
                 Element table = doc.getElementsByClass("table table-condensed table-hover small").first();
                 String kbps_160_AlbumLink, kbps_320_AlbumLink;
                 Element albumLinksDiv = doc.getElementsByClass("col-md-8").last();
@@ -143,19 +149,14 @@ public class Starmusiq {
                     albumJSON.put("albumContents", otherAlbumOpenMethod(table));
                     albumJSON.put("160kbpsZip", kbps_160_AlbumLink);
                     albumJSON.put("320kbpsZip", kbps_320_AlbumLink);
+                    listener.networkCallComplete(Utils.starmusiq_activity,albumJSON);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
         t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
-        return albumJSON;
     }
     private JSONArray otherAlbumOpenMethod(Element table) {
         JSONArray array=new JSONArray();
