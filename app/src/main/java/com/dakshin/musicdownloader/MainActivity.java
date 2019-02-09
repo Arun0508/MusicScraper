@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
     private SearchResultAdapter adapter;
     private AdView adView;
     String TAG="tag";
+    private ProgressBar progressBar;
     private final int STORAGE_REQUEST_CODE=911;
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -44,8 +46,10 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setSupportActionBar((Toolbar)findViewById(R.id.toolbar_main_activity));
-        getSupportActionBar().setTitle("windowTitle");
+        Toolbar toolbar=findViewById(R.id.toolbar_main_activity);
+        setSupportActionBar(toolbar);
+        progressBar=toolbar.findViewById(R.id.progressBar_main_activity);
+        progressBar.setVisibility(ProgressBar.VISIBLE);
         MobileAds.initialize(this,"ca-app-pub-4488089785718954~8167908136");
 
         adView = findViewById(R.id.adView);
@@ -84,8 +88,10 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
         adapter=new SearchResultAdapter(this,arrayList);
         adapter.setHasStableIds(true);
         listView.setAdapter(adapter);
+        progressBar.setVisibility(ProgressBar.INVISIBLE);
     }
     public void songslover(View v) {
+        progressBar.setVisibility(ProgressBar.VISIBLE);
         Utils.currentSite=Utils.songslover;
         arrayList.clear();
         String searchTerm=searchBar.getText().toString();
@@ -93,12 +99,12 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
         adapter.notifyDataSetChanged();
     }
     public void starmusiq(View v) {
+        progressBar.setVisibility(ProgressBar.VISIBLE);
         arrayList.clear();
         Utils.currentSite=Utils.starmusiq;
         String searchTerm=searchBar.getText().toString();
         Starmusiq searcher=new Starmusiq();
         searcher.searchStarmusiq(this,searchTerm);
-
         adapter.notifyDataSetChanged();
     }
 
@@ -114,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
                     Toast.makeText(MainActivity.this, "No results found", Toast.LENGTH_SHORT).show();
                 }
             });
+            progressBar.setVisibility(ProgressBar.INVISIBLE);
             return;
         }
         if(code.equals("songslover")) {
@@ -135,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
                     @Override
                     public void run() {
                         adapter.notifyDataSetChanged();
+                        progressBar.setVisibility(ProgressBar.INVISIBLE);
                     }
                 });
             } catch (JSONException e) {
@@ -150,9 +158,10 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
                         @Override
                         public void run() {
                             Toast.makeText(MainActivity.this, "No results found", Toast.LENGTH_SHORT).show();
-                            return;
+                            progressBar.setVisibility(ProgressBar.INVISIBLE);
                         }
                     });
+                    return;
                 }
                 for(int i=0;i<resultsArray.length();i++) {
                     JSONObject json=resultsArray.getJSONObject(i);
@@ -169,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements NetworkCallComple
                     @Override
                     public void run() {
                         adapter.notifyDataSetChanged();
+                        progressBar.setVisibility(ProgressBar.INVISIBLE);
                     }
                 });
             } catch(JSONException e) {
