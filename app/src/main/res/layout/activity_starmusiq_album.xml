@@ -11,24 +11,22 @@
         android:id="@+id/starmusiq_album_imageview"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:contentDescription="@string/album_icon"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="8dp"
+        android:contentDescription="@string/album_icon"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_starmusiq_activity"
         app:srcCompat="@android:color/holo_blue_bright" />
 
     <TextView
         android:id="@+id/album_textview_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorAccent"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        android:textColor="@color/colorAccent"
         app:layout_constraintBottom_toTopOf="@+id/album_textview_2"
-        app:layout_constraintStart_toEndOf="@+id/starmusiq_album_imageview"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/starmusiq_album_imageview" />
 
     <TextView
         android:id="@+id/album_textview_3"
@@ -100,4 +98,54 @@
         ads:layout_constraintBottom_toBottomOf="parent"
         ads:layout_constraintEnd_toEndOf="parent"
         ads:layout_constraintStart_toStartOf="parent" />
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_starmusiq_activity"
+        android:layout_width="354dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentInsetLeft="0dp"
+        android:contentInsetStart="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        android:contentInsetRight="0dp"
+        android:contentInsetEnd="0dp"
+        app:contentInsetRight="0dp"
+        app:contentInsetEnd="0dp"
+        app:titleTextColor="@color/white">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="14dp"
+                android:id="@+id/title_starmusiq_activity"
+                android:layout_toStartOf="@+id/progressBar_main_activity"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <ProgressBar
+                android:id="@+id/progressBar_main_activity"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp" />
+        </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
+
 </android.support.constraint.ConstraintLayout>

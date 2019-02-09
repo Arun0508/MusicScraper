@@ -51,7 +51,6 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
     @Override
     public void onClick(View v) {
         if(menuItem!=null) {
-            Toast.makeText(context, "Please wait", Toast.LENGTH_SHORT).show();
 
             MainActivity.progressBar.setVisibility(View.VISIBLE);
             if (Utils.currentSite.equals(Utils.starmusiq)) {

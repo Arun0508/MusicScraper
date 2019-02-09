@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +26,7 @@ import com.google.android.gms.ads.AdView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.lang.reflect.Array;
@@ -38,12 +41,19 @@ public class StarmusiqAlbum extends AppCompatActivity
     final Starmusiq starmusiq=new Starmusiq();
     private ArrayAdapter adapter;
     private ListView listView;
+    private ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_starmusiq_album);
+        Toolbar toolbar=findViewById(R.id.toolbar_starmusiq_activity);
+        setSupportActionBar(toolbar);
+        progressBar=toolbar.findViewById(R.id.progressBar_main_activity);
+        progressBar.setVisibility(ProgressBar.VISIBLE);
+        TextView title=toolbar.findViewById(R.id.title_starmusiq_activity);
         Intent intent = getIntent();
         albumName = intent.getStringExtra("one");
+        title.setText(albumName);
         two = intent.getStringExtra("two");
         three = intent.getStringExtra("three");
         link = intent.getStringExtra("link");
@@ -119,6 +129,7 @@ public class StarmusiqAlbum extends AppCompatActivity
                 @Override
                 public void run() {
                     adapter.notifyDataSetChanged();
+                    progressBar.setVisibility(View.INVISIBLE);
                 }
             });
             zip160 = albumJson.getString("160kbpsZip");
