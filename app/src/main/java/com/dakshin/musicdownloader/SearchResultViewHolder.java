@@ -73,7 +73,7 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
 
     void bindItem(SearchResultMenuItem item) {
         this.menuItem=item;
-        Bitmap bitmap = Utils.getBitmapFromURL(item.getImageUrl());
+        Bitmap bitmap = item.getIcon();
         imageView.setImageBitmap(bitmap);
         textView1.setText(item.getOne());
         textView2.setText(item.getTwo());
@@ -168,13 +168,7 @@ SongsLoverListener,DownloadCompleteListener,ByteArrayDownloadListener{
                     Environment.DIRECTORY_MUSIC),songName);
             file.save(songFile.getAbsolutePath());
             Log.d("tag","album art saved :)");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (UnsupportedTagException e) {
-            e.printStackTrace();
-        } catch (InvalidDataException e) {
-            e.printStackTrace();
-        } catch (NotSupportedException e) {
+        } catch (IOException | UnsupportedTagException | InvalidDataException | NotSupportedException e) {
             e.printStackTrace();
         }
 
